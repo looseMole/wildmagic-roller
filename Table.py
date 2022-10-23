@@ -1,11 +1,7 @@
 # Class that holds all info about a given table. For definition of a table, see the workbook.
 class Table:
-    min = 0
-    max = 100
-    tableName = ""
-
     # Initiate empty Table object
-    def __init__(self, tableName, min=0, max=0) -> None:
+    def __init__(self, tableName, min=100, max=0) -> None:
         self.tableName = tableName
         self.min = min
         self.max = max
@@ -14,14 +10,19 @@ class Table:
     # Add an outcome to the outcomeArray.
     def addOutcome(self, outcome):
         self.outcomeArray.append(outcome)
+        self.updateBorderValues(outcome)
 
     def getOutcomeByDiceValue(self, diceValue):
         for i in range(len(self.outcomeArray)):
             if self.outcomeArray[i].min <= diceValue <= self.outcomeArray[i].max:
                 return self.outcomeArray[i].getOutput()
 
-    def load(self, startingCell):
-        pass
+    # Updates the bordervalues self.min and self.max, if the given outcome has a greater/lesser max/min value.
+    def updateBorderValues(self, outcome):
+        if outcome.getMax() > self.max:
+            self.max = outcome.getMax()
+        if outcome.getMin() < self.min:
+            self.min = outcome.getMin()
 
     # Overrides the default tostring method.
     def __str__(self):
