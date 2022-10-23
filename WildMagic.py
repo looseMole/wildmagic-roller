@@ -91,6 +91,7 @@ while emptyRow < 2:
 
     incrementCellRows(2)
     if diceSheet[minCell].value and diceSheet[maxCell].value and diceSheet[outputCell].value:
+        emptyRow = 0
         continue
     else:
         emptyRow += 1
