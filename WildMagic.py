@@ -115,3 +115,10 @@ if (len(sys.argv) - 1):
             nameArray.append(table.getName())
         print(f"Invalid input \"{sys.argv[1]}\". Valid inputs are: {nameArray}.")
         exit()
+
+# Roll on the table defined as main (default is the first table in the spreadsheet)
+print(f"Rolling on {tableArray[startTableIndex].getName()}...")
+roll = diceRoll(tableArray[startTableIndex].getMin(), tableArray[startTableIndex].getMax())
+print(f"Rolled a {roll}...")
+outcome = tableArray[startTableIndex].getOutcomeByDiceValue(roll)
+print(outcome)
