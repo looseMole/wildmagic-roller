@@ -1,4 +1,5 @@
 import random
+import sys
 import openpyxl
 from openpyxl import DEFUSEDXML
 import os
@@ -95,3 +96,22 @@ while emptyRow < 2:
         continue
     else:
         emptyRow += 1
+
+# Execution part:
+startTableIndex = 0  # By default, the first index in the tableArray houses the main/start table.
+isTableName = False
+
+# Check for parameters passed, when calling program.
+if (len(sys.argv) - 1):
+    # Check whether parameter is a valid Table name.
+    for i in range(len(tableArray)):
+        if tableArray[i].getName() == sys.argv[1]:
+            isTableName = True
+            startTableIndex = i
+            break
+    if not isTableName:  # Will evaluate to True if given parameter is a valid Table name.
+        nameArray = []
+        for table in tableArray:
+            nameArray.append(table.getName())
+        print(f"Invalid input \"{sys.argv[1]}\". Valid inputs are: {nameArray}.")
+        exit()
