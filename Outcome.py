@@ -15,6 +15,12 @@ class Outcome:
     def getOutput(self):
         return self.output
 
+    def getMin(self):
+        return self.min
+
+    def getMax(self):
+        return self.max
+
     # Overriding native tostring method for Outcome
     def __str__(self):
         outcomeString = f"\n\"{self.output}\":\nmin: {self.min}\nmax: {self.max}"
