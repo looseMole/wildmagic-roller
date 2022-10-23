@@ -30,6 +30,9 @@ class Table:
     def getMax(self):
         return self.max
 
+    def getName(self):
+        return self.tableName
+
     # Overrides the default tostring method.
     def __str__(self):
         tableString = f"{self.tableName}, with a min of {self.min} and a max of {self.max}, " \
