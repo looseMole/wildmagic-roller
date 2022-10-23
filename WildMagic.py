@@ -95,22 +95,3 @@ while emptyRow < 2:
         continue
     else:
         emptyRow += 1
-
-# Test
-print(len(tableArray))
-for i in range(len(tableArray)):
-    print(tableArray[i])
-print(len(tableArray[0].outcomeArray))
-print(tableArray[1].getOutcomeByDiceValue(5))
-
-# Testing:
-# o1 = Outcome(1, 1, "death")
-# o2 = Outcome(2, 2, "misery")
-# o3 = Outcome(3, 3, "fun!")
-# t1 = Table("1", 1, 3)
-#
-# t1.addOutcome(o1)
-# t1.addOutcome(o2)
-# t1.addOutcome(o3)
-# print(t1)
-# print(t1.getOutcomeByDiceValue(diceRoll(t1.min, t1.max, [1, 2])))
