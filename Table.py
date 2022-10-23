@@ -24,6 +24,12 @@ class Table:
         if outcome.getMin() < self.min:
             self.min = outcome.getMin()
 
+    def getMin(self):
+        return self.min
+
+    def getMax(self):
+        return self.max
+
     # Overrides the default tostring method.
     def __str__(self):
         tableString = f"{self.tableName}, with a min of {self.min} and a max of {self.max}, " \
