@@ -1,4 +1,5 @@
 import random
+import sys
 import openpyxl
 from openpyxl import DEFUSEDXML
 import os
@@ -96,21 +97,28 @@ while emptyRow < 2:
     else:
         emptyRow += 1
 
-# Test
-print(len(tableArray))
-for i in range(len(tableArray)):
-    print(tableArray[i])
-print(len(tableArray[0].outcomeArray))
-print(tableArray[1].getOutcomeByDiceValue(5))
+# Execution part:
+startTableIndex = 0  # By default, the first index in the tableArray houses the main/start table.
+isTableName = False
 
-# Testing:
-# o1 = Outcome(1, 1, "death")
-# o2 = Outcome(2, 2, "misery")
-# o3 = Outcome(3, 3, "fun!")
-# t1 = Table("1", 1, 3)
-#
-# t1.addOutcome(o1)
-# t1.addOutcome(o2)
-# t1.addOutcome(o3)
-# print(t1)
-# print(t1.getOutcomeByDiceValue(diceRoll(t1.min, t1.max, [1, 2])))
+# Check for parameters passed, when calling program.
+if (len(sys.argv) - 1):
+    # Check whether parameter is a valid Table name.
+    for i in range(len(tableArray)):
+        if tableArray[i].getName() == sys.argv[1]:
+            isTableName = True
+            startTableIndex = i
+            break
+    if not isTableName:  # Will evaluate to True if given parameter is a valid Table name.
+        nameArray = []
+        for table in tableArray:
+            nameArray.append(table.getName())
+        print(f"Invalid input \"{sys.argv[1]}\". Valid inputs are: {nameArray}.")
+        exit()
+
+# Roll on the table defined as main (default is the first table in the spreadsheet)
+print(f"Rolling on {tableArray[startTableIndex].getName()}...")
+roll = diceRoll(tableArray[startTableIndex].getMin(), tableArray[startTableIndex].getMax())
+print(f"Rolled a {roll}...")
+outcome = tableArray[startTableIndex].getOutcomeByDiceValue(roll)
+print(outcome)
