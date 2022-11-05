@@ -7,6 +7,7 @@ from platform import system
 from Table import Table
 from Outcome import Outcome
 
+# TODO: Add more comments!
 # Global variables
 scriptFolder = os.path.dirname(__file__)
 if system() == 'Windows':
@@ -53,6 +54,49 @@ def incrementCellRows(amount):
     outputCell = "C" + str(minCellRow)
     goToCell = "D" + str(minCellRow)
     exceptCell = "E" + str(minCellRow)
+
+# A recursive method for executing goTo functionality.
+recursionCounter = 0  # Is incremented inside the method. If too large, the spreadsheet probably has a goTo-Loop.
+recursionLimit = settingSheet['B2'].value
+def executeOutcome(outcome):
+    global recursionCounter, recursionLimit
+    global tableArray
+    stop = False
+
+    while not stop and recursionCounter < recursionLimit:
+        if outcome.hasGoTo():
+            tableIndex = -1  # Initialization of tableIndex.
+
+            for string in outcome.getGoToTableArray():
+                # Find table mentioned in goTo:
+                for i in range(len(tableArray)):
+                    if tableArray[i].getName().replace(" ", "") == string:  # If a tablename matches the input string
+                        tableIndex = i
+                        break
+
+                if tableIndex == -1:  # If tableIndex has not been changed, no valid table has been found.
+                    raise Exception("Name in GoTo-cell not valid.")
+
+                # Rolls on the found table.
+                print(f"Rolling on {tableArray[tableIndex].getName()}...")
+                roll = diceRoll(tableArray[tableIndex].getMin(), tableArray[tableIndex].getMax())
+
+                # Prints result of roll to console.
+                print(f"Rolled a {roll}...")
+                newOutcome = tableArray[tableIndex].getOutcomeByDiceValue(roll)
+                print(newOutcome.getOutput()+"\n")
+
+                # Note: Recursion
+                # Tries to call this method again. If new outcome has no GoTo reference, stop will be set to True, and
+                # the recursive loop will end.
+                recursionCounter += 1
+                print(recursionCounter)
+                stop = executeOutcome(newOutcome)  # If True, the loop is ended.
+
+        else:  # If outcome has no goTo:
+            stop = True
+
+    return True  # If the condition reached this far, return True to end recursive loop.
 
 
 # Map the tables into Table and Outcome objects #
@@ -104,7 +148,7 @@ while emptyRow < 2:
 startTableIndex = 0  # By default, the first index in the tableArray houses the main/start table.
 isTableName = False
 
-# Check for parameters passed, when calling program.
+# Check for parameters passed, when calling program, and whether said parameter is a valid tablename.
 if (len(sys.argv) - 1):
     # Check whether parameter is a valid Table name.
     for i in range(len(tableArray)):
@@ -119,9 +163,13 @@ if (len(sys.argv) - 1):
         print(f"Invalid input \"{sys.argv[1]}\". Valid inputs are: {nameArray}.")
         exit()
 
+# Initial table roll:
 # Roll on the table defined as main (default is the first table in the spreadsheet)
 print(f"Rolling on {tableArray[startTableIndex].getName()}...")
 roll = diceRoll(tableArray[startTableIndex].getMin(), tableArray[startTableIndex].getMax())
 print(f"Rolled a {roll}...")
 outcome = tableArray[startTableIndex].getOutcomeByDiceValue(roll)
 print(outcome.getOutput()+"\n")
+
+# Following table rolls:
+executeOutcome(outcome)
