@@ -55,7 +55,7 @@ def incrementCellRows(amount):
     exceptCell = "E" + str(minCellRow)
 
 
-# Map the tables into Table and Outcome objects.
+# Map the tables into Table and Outcome objects #
 tableArray = []
 
 minCellRow = 2  # Start at two per default spreadsheet. max-, outcome, GoTo, and Except-cells are at this row as well.
@@ -70,26 +70,29 @@ exceptCell = "E" + str(minCellRow)
 # Counter for amount of empty rows encountered. If an empty row has been met once the table is assumed ended.
 emptyRow = 0
 while emptyRow < 2:
-    # Create the first table and if default starting line for table values is not empty, add the first outcome.
+    # Create the table.
     currTable = Table(diceSheet["A" + str(minCellRow - 1)].value)  # Reads the name from the corner of the table.
     tableArray.append(currTable)
 
+    # Create the tables first Outcome object, and add it to the table.
     if diceSheet[minCell].value and diceSheet[maxCell].value and diceSheet[outputCell].value:
-        currOutcome = Outcome(diceSheet[minCell].value, diceSheet[maxCell].value, diceSheet[outputCell].value)
+        currOutcome = Outcome(diceSheet[minCell].value, diceSheet[maxCell].value, diceSheet[outputCell].value, diceSheet[goToCell].value, diceSheet[exceptCell].value)
         tableArray[len(tableArray)-1].addOutcome(currOutcome)
-    else:
-        exit()
+    else: # TODO: Add isFirstTable check here, as to only break if no tables can be made.
+        raise Exception(f"Table found with wrong or no outcome values, on row {minCellRow}.")
 
+    # Add the rest of the Outcomes (which should have no more than one empty row between them.)
     while emptyRow < 1:
         incrementCellRows(3)
-        # print(minCell)
         if diceSheet[minCell].value and diceSheet[maxCell].value and diceSheet[outputCell].value:
-            currOutcome = Outcome(diceSheet[minCell].value, diceSheet[maxCell].value, diceSheet[outputCell].value)
+            currOutcome = Outcome(diceSheet[minCell].value, diceSheet[maxCell].value, diceSheet[outputCell].value, diceSheet[goToCell].value, diceSheet[exceptCell].value)
             tableArray[len(tableArray)-1].addOutcome(currOutcome)
             emptyRow = 0
         else:
             emptyRow += 1
 
+    # Checks whether the spreadsheet has more tables following the current one, and if so, starts the loop over with
+    # that Table.
     incrementCellRows(2)
     if diceSheet[minCell].value and diceSheet[maxCell].value and diceSheet[outputCell].value:
         emptyRow = 0
