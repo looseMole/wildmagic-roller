@@ -55,12 +55,17 @@ def incrementCellRows(amount):
     goToCell = "D" + str(minCellRow)
     exceptCell = "E" + str(minCellRow)
 
+
 # A recursive method for executing goTo functionality.
 recursionCounter = 0  # Is incremented inside the method. If too large, the spreadsheet probably has a goTo-Loop.
 recursionLimit = settingSheet['B2'].value
+warningHasBeenPrinted = False
+
+
 def executeOutcome(outcome):
     global recursionCounter, recursionLimit
     global tableArray
+    global warningHasBeenPrinted
     stop = False
 
     while not stop and recursionCounter < recursionLimit:
@@ -121,6 +126,10 @@ def executeOutcome(outcome):
         else:  # If outcome has no goTo:
             stop = True
 
+    if recursionCounter >= recursionLimit and not warningHasBeenPrinted:
+        print(f"Warning: Program has now rolled on a table {recursionCounter} times. It seems there is a goTo loop.")
+        print(f"Aborting execution, as number of rolls without input has been set to {recursionLimit} in settings.")
+        warningHasBeenPrinted = True
     return True  # If the condition reached this far, return True to end recursive loop.
 
 
