@@ -55,12 +55,17 @@ def incrementCellRows(amount):
     goToCell = "D" + str(minCellRow)
     exceptCell = "E" + str(minCellRow)
 
+
 # A recursive method for executing goTo functionality.
 recursionCounter = 0  # Is incremented inside the method. If too large, the spreadsheet probably has a goTo-Loop.
 recursionLimit = settingSheet['B2'].value
+warningHasBeenPrinted = False
+
+
 def executeOutcome(outcome):
     global recursionCounter, recursionLimit
     global tableArray
+    global warningHasBeenPrinted
     stop = False
 
     while not stop and recursionCounter < recursionLimit:
@@ -79,7 +84,32 @@ def executeOutcome(outcome):
 
                 # Rolls on the found table.
                 print(f"Rolling on {tableArray[tableIndex].getName()}...")
-                roll = diceRoll(tableArray[tableIndex].getMin(), tableArray[tableIndex].getMax())
+
+                # TODO: Remake this, to use diceRoll()s exception-support.
+                rollIsValid = False
+                rollAttempts = 0  # If more than 100 attempts is needed to get a valid roll, it is probably impossible.
+                while (not rollIsValid and rollAttempts < 100):
+                    roll = diceRoll(tableArray[tableIndex].getMin(), tableArray[tableIndex].getMax())
+                    rollAttempts += 1
+
+                    # Check whether given roll is marked in the "except"-column.
+                    if roll in outcome.getSingleException():
+                        continue
+                    else:
+                        rollInRange = False  # Initialization, in case the first roll works.
+                        for exceptRange in outcome.getRangeException():
+                            rollInRange = False
+                            if int(exceptRange[0]) <= roll <= int(exceptRange[1]):
+                                rollInRange = True
+                        if (rollInRange):
+                            continue
+
+                    # If roll has not appeared in either of the exception arrays, accept the roll.
+                    rollIsValid = True
+
+                if (not rollIsValid):
+                    print("Could not, with 1000 tries, get a valid roll.")
+                    return
 
                 # Prints result of roll to console.
                 print(f"Rolled a {roll}...")
@@ -96,6 +126,10 @@ def executeOutcome(outcome):
         else:  # If outcome has no goTo:
             stop = True
 
+    if recursionCounter >= recursionLimit and not warningHasBeenPrinted:
+        print(f"Warning: Program has now rolled on a table {recursionCounter} times. It seems there is a goTo loop.")
+        print(f"Aborting execution, as number of rolls without input has been set to {recursionLimit} in settings.")
+        warningHasBeenPrinted = True
     return True  # If the condition reached this far, return True to end recursive loop.
 
 
