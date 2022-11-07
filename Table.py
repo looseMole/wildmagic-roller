@@ -15,6 +15,11 @@ class Table:
     def getOutcomeByDiceValue(self, diceValue):
         for i in range(len(self.outcomeArray)):
             if self.outcomeArray[i].min <= diceValue <= self.outcomeArray[i].max:
+                return self.outcomeArray[i]
+
+    def getOutputByDiceValue(self, diceValue):
+        for i in range(len(self.outcomeArray)):
+            if self.outcomeArray[i].min <= diceValue <= self.outcomeArray[i].max:
                 return self.outcomeArray[i].getOutput()
 
     # Updates the bordervalues self.min and self.max, if the given outcome has a greater/lesser max/min value.

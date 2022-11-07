@@ -1,16 +1,43 @@
+# TODO: Make functionality for parsing input from goTo and Except cells to something useful.
 class Outcome:
-    min = 0
-    max = 100
-    output = "N/A"
-    goToTable = 0
-    goToExceptions = {}
+    def __init__(self, min, max, output, goToTable='', goToExceptions=''):
+        # self.min = 0
+        # max = 100
+        # output = "N/A"
+        # goToTableArray = []
+        self.singleException = []
+        self.rangeException = []
 
-    def __init__(self, min, max, output, goToTable=0, goToExceptions=0):
         self.min = min
         self.max = max
         self.output = output
-        self.goToTable = goToTable
-        self.goToExceptions = goToExceptions
+        # Turns the goToTable input from a str to a list of Table names.
+        if isinstance(goToTable, str):
+            goToTable = goToTable.replace(" ", "")
+            goToTable = goToTable.split(",")
+            self.goToTableArray = goToTable
+        # Turns the goToExceptions input from a str to either a list of min-max pairs, or a list of single ints.
+        if goToExceptions:
+            goToExceptions = goToExceptions.replace(" ", "")
+            goToExceptions = goToExceptions.split(",")
+            for exception in goToExceptions:
+                if exception.__contains__('-'):
+                    exception = exception.split("-")
+                    self.rangeException.append(exception)  # Note: Each element is array of 2 strings.
+                else:
+                    self.singleException.append(int(exception))  # Notes: Each element is int.
+
+    def hasGoTo(self):
+        if self.goToTableArray:
+            return True
+        else:
+            return False
+
+    def hasExceptions(self):
+        if self.singleException or self.rangeException:
+            return True
+        else:
+            return False
 
     def getOutput(self):
         return self.output
@@ -20,6 +47,15 @@ class Outcome:
 
     def getMax(self):
         return self.max
+
+    def getGoToTableArray(self):
+        return self.goToTableArray
+
+    def getSingleException(self):
+        return self.singleException
+
+    def getRangeException(self):
+        return self.rangeException
 
     # Overriding native tostring method for Outcome
     def __str__(self):
