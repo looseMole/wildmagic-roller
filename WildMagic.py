@@ -79,7 +79,32 @@ def executeOutcome(outcome):
 
                 # Rolls on the found table.
                 print(f"Rolling on {tableArray[tableIndex].getName()}...")
-                roll = diceRoll(tableArray[tableIndex].getMin(), tableArray[tableIndex].getMax())
+
+                # TODO: Remake this, to use diceRoll()s exception-support.
+                rollIsValid = False
+                rollAttempts = 0  # If more than 100 attempts is needed to get a valid roll, it is probably impossible.
+                while (not rollIsValid and rollAttempts < 100):
+                    roll = diceRoll(tableArray[tableIndex].getMin(), tableArray[tableIndex].getMax())
+                    rollAttempts += 1
+
+                    # Check whether given roll is marked in the "except"-column.
+                    if roll in outcome.getSingleException():
+                        continue
+                    else:
+                        rollInRange = False  # Initialization, in case the first roll works.
+                        for exceptRange in outcome.getRangeException():
+                            rollInRange = False
+                            if int(exceptRange[0]) <= roll <= int(exceptRange[1]):
+                                rollInRange = True
+                        if (rollInRange):
+                            continue
+
+                    # If roll has not appeared in either of the exception arrays, accept the roll.
+                    rollIsValid = True
+
+                if (not rollIsValid):
+                    print("Could not, with 1000 tries, get a valid roll.")
+                    return
 
                 # Prints result of roll to console.
                 print(f"Rolled a {roll}...")
