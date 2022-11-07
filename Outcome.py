@@ -1,13 +1,13 @@
 # TODO: Make functionality for parsing input from goTo and Except cells to something useful.
 class Outcome:
-    min = 0
-    max = 100
-    output = "N/A"
-    goToTableArray = []
-    singleException = []
-    rangeException = []
-
     def __init__(self, min, max, output, goToTable='', goToExceptions=''):
+        # self.min = 0
+        # max = 100
+        # output = "N/A"
+        # goToTableArray = []
+        self.singleException = []
+        self.rangeException = []
+
         self.min = min
         self.max = max
         self.output = output
@@ -23,9 +23,9 @@ class Outcome:
             for exception in goToExceptions:
                 if exception.__contains__('-'):
                     exception = exception.split("-")
-                    self.rangeException.append(exception)
+                    self.rangeException.append(exception)  # Note: Each element is array of 2 strings.
                 else:
-                    self.singleException.append(exception)
+                    self.singleException.append(int(exception))  # Notes: Each element is int.
 
     def hasGoTo(self):
         if self.goToTableArray:
